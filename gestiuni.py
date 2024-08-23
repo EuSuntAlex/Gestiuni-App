@@ -42,33 +42,6 @@ class MainWindow(QWidget):
             self.open_main_window()
 
 
-    def create_ghid(self):
-        ghid_path = os.path.join(self.folder_path, "Ghid.txt")
-        with open(ghid_path, "w") as f:
-            f.write("Acesta este un ghid pentru utilizatorii aplicatiei noastre.\n\n")
-            f.write("1. Introducere:\n")
-            f.write("\tAceasta secțiune oferă o prezentare generală a aplicației.\n\n")
-            f.write("2. Instalare:\n")
-            f.write("\tPasul 1: Descărcați aplicația de pe site-ul nostru.\n")
-            f.write("\tPasul 2: Rulați programul de instalare și urmați instrucțiunile.\n\n")
-            f.write("3. Utilizare:\n")
-            f.write("\t\t3.1. Crearea unui cont:\n")
-            f.write("\t\t\tPasul 1: Deschideți aplicația și apăsați pe 'Creare cont'.\n")
-            f.write("\t\t\tPasul 2: Introduceți informațiile solicitate și apăsați 'Submit'.\n")
-            f.write("\t\t3.2. Autentificare:\n")
-            f.write("\t\t\tPasul 1: Introduceți numele de utilizator și parola.\n")
-            f.write("\t\t\tPasul 2: Apăsați pe 'Autentificare'.\n\n")
-            f.write("4. Funcționalități:\n")
-            f.write("\tAplicația noastră oferă următoarele funcționalități:\n")
-            f.write("\t\t- Gestionare utilizatori\n")
-            f.write("\t\t- Generare rapoarte\n")
-            f.write("\t\t- Configurări avansate\n\n")
-            f.write("5. Întrebări frecvente:\n")
-            f.write("\tAceasta secțiune răspunde la întrebările cele mai comune.\n\n")
-            f.write("6. Asistență tehnică:\n")
-            f.write("\tPentru asistență tehnică, vă rugăm să ne contactați la suport@aplicatie.ro.\n")
-            
-            
             
             
             
@@ -80,7 +53,6 @@ class MainWindow(QWidget):
             if not os.path.exists(file_path):
                 df = pd.DataFrame()
                 df.to_excel(file_path, index=False)
-        #self.create_ghid()
 
     def load_excel_files(self):
         file_names = [" - intrari", " - vanzare cu factura", " - vanzari casa de marcat", " - transfer", " - centralizator", " - centralizator SGR"]
@@ -294,8 +266,11 @@ class CentralizatorSGRPage(QWidget):
 
 
         for col_num, value in enumerate(df.columns.values):
-            worksheet.write(0, col_num, value, header_format)
-
+            try:
+                worksheet.write(0, col_num, value, header_format)
+            except:
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                return
 
         writer.close()
 
@@ -471,13 +446,24 @@ class CentralizatorSGRPage(QWidget):
 
         for col_num, (col_name, width) in enumerate(column_widths.items()):
             worksheet.set_column(col_num, col_num, width)
-            worksheet.write(0, col_num, col_name, header_format)
+            try:
+                worksheet.write(0, col_num, col_name, header_format)
+            except:
+                # show a popup with the error message and close the window
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                # abort the function
+                return
 
         # Formatăm rândul total
         total_row_index = len(df_centralizator) - 1
         for col_num in range(6):
-            worksheet.write(total_row_index + 1, col_num, df_centralizator.iloc[total_row_index, col_num], total_format)
-
+            try:
+                worksheet.write(total_row_index + 1, col_num, df_centralizator.iloc[total_row_index, col_num], total_format)
+            except:
+                # show a popup with the error message and close the window
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                # abort the function
+                return
         writer.close()
 
         QMessageBox.information(self, "Succes", "Centralizatorul a fost actualizat.")
@@ -584,7 +570,11 @@ class CentralizatorPage(QWidget):
 
         for col_num, (col_name, width) in enumerate(column_widths.items()):
             worksheet.set_column(col_num, col_num, width)
-            worksheet.write(0, col_num, col_name, header_format)
+            try:
+                worksheet.write(0, col_num, col_name, header_format)
+            except:
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                return
             
         # Pt finalul listei
         border_format = workbook.add_format({
@@ -596,8 +586,11 @@ class CentralizatorPage(QWidget):
 
         total_row_index = len(df) - 1
         for col_num in range(7):
-            worksheet.write(total_row_index + 1, col_num, df.iloc[total_row_index, col_num], border_format)
-
+            try:
+                worksheet.write(total_row_index + 1, col_num, df.iloc[total_row_index, col_num], border_format)
+            except:
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                return
         writer.close()
    
    
@@ -772,8 +765,12 @@ class CentralizatorPage(QWidget):
         }
         for col_num, (col_name, width) in enumerate(column_widths.items()):
             worksheet.set_column(col_num, col_num, width)
-            worksheet.write(0, col_num, col_name, header_format)
-
+            try:
+                worksheet.write(0, col_num, col_name, header_format)
+            except:
+                QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                return
+            
         # Ajustăm înălțimea rândului pentru header
         worksheet.set_row(0, 30)  # Ajustează înălțimea după cum este necesar
 
@@ -935,7 +932,12 @@ class IntrariPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
+                
                 worksheet.set_column(col_num, col_num, 15)
             writer.close()
         else:
@@ -955,7 +957,12 @@ class IntrariPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:    
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
+                
                 worksheet.set_column(col_num, col_num, 15)
             writer.close()
 
@@ -1093,8 +1100,13 @@ class VanzareFacturaPage(QWidget):
            })
 
            for col_num, value in enumerate(df.columns.values):
-               worksheet.write(0, col_num, value, header_format)
-               worksheet.set_column(col_num, col_num, 15)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
+                
+                worksheet.set_column(col_num, col_num, 15)
            writer.close()
        else:
            df = pd.concat([df, pd.DataFrame([new_data])], ignore_index=True)
@@ -1113,8 +1125,12 @@ class VanzareFacturaPage(QWidget):
            })
 
            for col_num, value in enumerate(df.columns.values):
-               worksheet.write(0, col_num, value, header_format)
-               worksheet.set_column(col_num, col_num, 15)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
+                worksheet.set_column(col_num, col_num, 15)
            writer.close()
 
        QMessageBox.information(self, "Succes", "Intrarea a fost adăugată cu succes!")
@@ -1258,7 +1274,11 @@ class VanzareCasaMarcatPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
 
             writer.close()
         else:
@@ -1278,7 +1298,11 @@ class VanzareCasaMarcatPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
                 worksheet.set_column(col_num, col_num, 15)
             writer.close()
 
@@ -1416,7 +1440,11 @@ class TransferIntreGestPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:    
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
 
             writer.close()
         else:
@@ -1436,7 +1464,11 @@ class TransferIntreGestPage(QWidget):
             })
 
             for col_num, value in enumerate(df.columns.values):
-                worksheet.write(0, col_num, value, header_format)
+                try:
+                    worksheet.write(0, col_num, value, header_format)
+                except:
+                    QMessageBox.warning(self, "Eroare", "Fisier deja deschis. Inchideti fisierul si incercati din nou.")
+                    return
                 worksheet.set_column(col_num, col_num, 15)
 
             writer.close()

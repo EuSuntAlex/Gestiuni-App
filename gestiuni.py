@@ -40,6 +40,7 @@ class MainWindow(QWidget):
             self.check_and_create_excel_files()
             self.load_excel_files()
             self.open_main_window()
+            self.close()
 
 
             
@@ -101,8 +102,18 @@ class MainPage(QWidget):
         self.btn_centralizator_sgr.clicked.connect(self.open_centralizator_sgr)
         layout.addWidget(self.btn_centralizator_sgr)
 
+        self.btn_inapoi_window = QPushButton("Inapoi la Selectarea Folderului", self)
+        self.btn_inapoi_window.clicked.connect(self.back_to_folder_selection)
+        layout.addWidget(self.btn_inapoi_window)
+
+
 
         self.setLayout(layout)
+
+    def back_to_folder_selection(self):
+        self.close()
+        self.main_window = MainWindow()
+        self.main_window.show()
 
     def open_centralizator_sgr(self):
         self.centralizator_sgr_window = CentralizatorSGRPage(self.folder_path, self.excel_data)
